@@ -1,0 +1,133 @@
+---
+title: "Homework 4"
+author: "Mahima Mahajan"
+date: "2025-02-14"
+output:
+  html_document: default
+  pdf_document: default
+---
+# **EID :** mkm4582
+# **[GitHub repo link (CLICK)](https://github.com/mahimaKmahajan/SDS_315_HW4)**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+options(warn=-1)
+
+# Libraries used ...
+library(tidyverse)
+library(mosaic)
+library(ggplot2)
+
+```
+
+# **Problem 1.** Iron Bank
+
+**Null hypothesis:** The security trades from the Iron Bank are flagged at the same 2.4% baseline rate as that of other traders. 
+
+**Test statistic:** 70. \n The test statistic represents the number of flagged traders at Iron Bank in 2021 by SEC's detection algorithm.
+
+**Plot of probability distribution of test statistic:**
+```{r, echo=FALSE}
+# For reproducability purposes ...
+set.seed(100)
+
+n <- 2021
+prob <- 0.024
+
+# simulation
+sim_flags <- rbinom(100000, size = n, prob)
+
+# probability dist. of test statistic
+hist(sim_flags, main = "Monte Carlo Simulation of Flagged Trades at Iron Bank by SEC", xlab = "Number of flagged trades", col = "#47693080", border = "black") 
+abline(v = 70, col = "red")
+
+# p-value calculation
+p_val <- mean(sim_flags >= 70) # 0.00198
+```
+\n
+
+**p-value:** 0.00198
+
+**Conclusion:** Because 0.00198 is significantly lesser than 0.05, we reject the null hypothesis. This suggests that employees at Iron Bank are flagged at a much higher rate than the SEC's 2.4% baseline rate
+
+# **Problem 2.** health inspections
+
+**Null hypothesis:** The observed data for Gourmet Bites is consistent with the Health Department’s null hypothesis that, on average, restaurants in the city are cited for health code violations at the same 3% baseline rate.
+
+**Test Statistic:** 8. The number of observed health code violations. 
+
+**Plot of probability distribution of test statistic:**
+```{r, echo=FALSE}
+# For reproducability purposes ...
+set.seed(100)
+
+n <- 50
+p <- 0.03
+
+# simulation
+sim_violations <- rbinom(100000, size = n, prob = p)
+
+# probability dist. of test statistic
+hist(sim_violations, probability = TRUE, main = "Monte Carlo Simulation of Violations by the local Health Department", xlab = "Number of health code violations", col = "#47693080", border = "black")
+abline(v = 8, col = "red")
+
+# p-value calculation
+p_val <- mean(sim_violations >= 8) # 0.00015
+```
+\n
+
+**p-value:** 0.00015
+
+**Conclusion:** Because 0.00015 is significantly lesser than 0.05, we reject the null hypothesis. This suggests that Gourmet Bites has a higher health code violation rate than the local Health Department's data of a 3% average baseline rate. 
+
+# **Problem 3.** Evaluating Jury Selection for Bias
+
+**Ho:** The racial distribution of jurors empaneled by this judge matches the distribution of the eligible jury pool from the population proportions.
+
+**T:** For this test, the test statistic is chi-squared. 
+
+**P(T|Ho):**
+```{r, echo=FALSE}
+jury_cts <- c(85, 56, 59, 27, 13)
+pop_prop <- c(0.30, 0.25, 0.20, 0.15, 0.10)
+
+test_cts <- 240 * pop_prop
+
+# chi_square test
+chi_square_test <- chisq.test(jury_cts, p = pop_prop)
+print(chi_square_test)
+
+```
+**Conclusion:** Because 0.01445 is less than 0.05, we reject the null hypothesis. This suggests that the judge’s jury selections are different from the eligible pool's population proportions, and that there _is_ systemic bias in jury selection. Other explanations include the specific case currently assigned-- as both the prosecution and defense sides look for specific criteria from the jury pool. To investigate further, we can look at the jury pool from past cases similar to the current one.
+
+# **Problem 4.** LLM Watermarking
+
+## Part A: the null or reference distribution
+```{r, echo=FALSE}
+# Step 1
+sentences <- readLines("brown_sentences.txt")
+
+# Step 2
+preprocess_sentences <- function(text) {
+  # Remove non-letters and convert to uppercase
+  clean_text <- gsub("[^A-Za-z]", "", text)
+  clean_text <- toupper(clean_text)
+  return(clean_text)
+}
+
+processed_sentences <- sapply(sentences, preprocess_sentences)
+
+# Step 3
+letters <- function(text) {
+  table(strsplit(text, "")[[1]])
+}
+split_sentences <- lapply(processed_sentences, letters)
+
+# Step 4
+# Step 5
+
+```
+
+
+## Part B: checking for a watermark
+
